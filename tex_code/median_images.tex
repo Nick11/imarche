@@ -1,0 +1,138 @@
+\documentclass{paper}
+%Use this line instead if you want to use running heads (i.e. headers on each page):
+%\documentclass[runningheads]{llncs}
+\usepackage[german]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{multimedia}
+\usepackage{mathtools}
+\usepackage{paratype}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{nameref}
+\captionsetup{compatibility=false}
+
+\begin{document}
+	\title{Median Bilder}
+	\subtitle{Kontinuierliche automatisierte Dokumentation mittels Median Bilden}
+	
+	\author{Niclas Scheuing}
+	
+	\maketitle
+	
+	\section{Motivation}
+		Mit einer fest installierten Kamera werden periodisch Fotos gemacht. In jedem Bild verdecken Personen einen Teil der Szene, man möchte aber nur die Szene ohne die Personen im Vordergrund.
+		Dies kann beispielsweise eine Grabung sein, bei der Personen arbeiten und sich bewegen, sich die Grabung innerhalb kurzer Zeit aber nur sehr wenig verändert. Die Kamera wäre fix installiert und würde automatisch jede Minute ein Bild machen (Zahl frei erfundene).
+
+	\section{Voraussetzung}
+		Die Grundannahme ist, dass sich die Szene im Hintergrund über eine bestimmte Zeit nicht verändert.
+
+	\section{Verfahren}
+		Für jedes Subpixel (rot, grün, blau Farbwert eines Pixels) wir der Median über alle Bilder berechnet. Setzt man diese Mediane wieder zu einem Bild zusammen, ist nur noch sichtbar, was sich über alle Bilder nicht verändert
+	
+	\section{Versuchsreihe}
+		\subsection{Daten}
+			Die Daten sind bilder aus einem Video. Sie sind in Full HD Auflösung, was für heutige Foto Kameras sehr niedrig wäre.
+			Siehe Figure \ref{input_images}.
+		\subsection{Resultate}
+			Figures \ref{res1} bis \ref{res3} zeigen, dass bereits 16 Bilder reichen um ein artefaktfreies Median Bild zu erhalten.
+	\section{Probleme}
+		\subsection{Performance}
+			Die Berechnung des Median Bildes dauert ziemlich lange (mehrere Minuten) und erfordert sehr viel Arbeitsspeicher. Meine sehr einfach Implementierung braucht ca. 5GiB Arbeitsspeicher für die Medianberechnung der 46 Bilder.
+			
+			Diese Probleme kann man durch Optimierung (selektives Einlesen von Daten und Parallelisierung) beheben.
+			
+		\subsection{Voraussetzung trifft nicht zu}
+			Auf einer Grabung wird die Grundannahme, dass der Hintergrund (was uns Interessiert) sich nicht bewegt, nicht komplett erfüllt sein. Während 10 Minuten verändert sich die Grabung (unser Hintergrund) und das Median Bild wird eine Mischung aus allen Zuständen in dieser Zeit anzeigen. Es ist danach nicht mehr bestimmbar welches Pixel aus welcher Zeit stammt.
+			
+			Ich denke jedoch, dass die Voraussetzung gut genug erfüllt ist um ein brauchbares Resultat zu erhalten.
+		\subsection{Installation der Kamera}	
+			Die Bilder müssen exakt aus der gleichen Position gemacht werden. Kleine Verschiebungen zerstören das Bild bereits.
+			Hier müsste man eine robuste Installation haben. Zusätzlich kann man die Bilder vor der Verarbeitung automatisch ausrichten, damit sie sich bestmöglich überlagern. Von Hand geschossene Fotos werden aber trotzdem nicht reichen.
+
+		\section{Fazit}
+			Median Bilder einer Grabung könnten automatisch erstellt werden und die Grabung ohne aktives Wirken zusätzlich dokumentieren.
+			Die Stärke einer solchen Aufzeichnung ist, dass man im Nachhinein noch nachverfolgen kann, wie gegraben wurde. Konventionelle Dokumentationen zielen eher darauf ab einen finalen Zustand darzustellen, legen aber weniger Fokus auf den Prozess des Ausgrabens.
+		
+		
+			\begin{figure}
+				\includegraphics[width=\textwidth]{results/med-totImg_5-used_100pc.jpg}
+				\caption{Median Bild. 5 Bilder verwendet.}
+				\includegraphics[width=\textwidth]{results/med-totImg_6-used_100pc.jpg}
+				\caption{Median Bild. 6 Bilder verwendet.}
+				\includegraphics[width=\textwidth]{results/med-totImg_7-used_100pc.jpg}
+				\caption{Median Bild. 7 Bilder verwendet.}
+				\label{res1}
+			\end{figure}
+			\begin{figure}
+				\includegraphics[width=\textwidth]{results/med-totImg_8-used_100pc.jpg}
+				\caption{Median Bild. 8 Bilder verwendet.}
+				\includegraphics[width=\textwidth]{results/med-totImg_10-used_100pc.jpg}
+				\caption{Median Bild. 10 Bilder verwendet.}
+				\includegraphics[width=\textwidth]{results/med-totImg_16-used_100pc.jpg}
+				\caption{Median Bild. 16 Bilder verwendet.}
+				\label{res2}
+			\end{figure}
+			\begin{figure}
+				\includegraphics[width=\textwidth]{results/med-totImg_23-used_100pc.jpg}
+				\caption{Median Bild. 23 Bilder verwendet.}
+				\includegraphics[width=\textwidth]{results/med-totImg_46-used_100pc.jpg}
+				\caption{Median Bild. 46 Bilder verwendet.}	
+				\label{res3}			
+			\end{figure}
+	\begin{appendix}
+		\section{Versuchsreihe}
+			\subsection{Daten}
+				\begin{figure}
+					\includegraphics[width=0.23\textwidth]{input_imgs/frame_1.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_2.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_3.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_4.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_5.jpg}					
+					\includegraphics[width=0.23\textwidth]{input_imgs/frame_6.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_7.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_8.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_9.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_10.jpg}
+					\includegraphics[width=0.23\textwidth]{input_imgs/frame_11.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_12.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_13.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_14.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_15.jpg}
+					\includegraphics[width=0.23\textwidth]{input_imgs/frame_16.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_17.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_18.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_19.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_20.jpg}	
+					\includegraphics[width=0.23\textwidth]{input_imgs/frame_21.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_22.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_23.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_24.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_25.jpg}					
+					\includegraphics[width=0.23\textwidth]{input_imgs/frame_26.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_27.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_28.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_29.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_30.jpg}
+					\includegraphics[width=0.23\textwidth]{input_imgs/frame_31.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_32.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_33.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_34.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_35.jpg}
+					\includegraphics[width=0.23\textwidth]{input_imgs/frame_36.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_37.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_38.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_39.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_40.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_41.jpg}
+					\includegraphics[width=0.23\textwidth]{input_imgs/frame_42.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_43.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_44.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_45.jpg}
+					\includegraphics[width=0.25\textwidth]{input_imgs/frame_46.jpg}
+					\caption{Input images}
+					\label{input_images}														
+				\end{figure}
+	\end{appendix}
+\end{document}
